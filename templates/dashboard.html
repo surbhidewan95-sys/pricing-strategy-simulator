@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - PricingAI</title>
+
+    <!-- Dashboard CSS & FontAwesome -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        .metric-card {
+            background: #162436;
+            padding: 22px 24px;
+            border-radius: 14px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.35s ease-in-out;
+            cursor: pointer;
+        }
+
+        /* Hover Neon Glow Effect for Each Metric Card */
+        .card-cyan:hover {
+            transform: translateY(-4px);
+            border-color: #00d2ff;
+            box-shadow: 0 0 22px rgba(0, 210, 255, 0.4), inset 0 0 10px rgba(0, 210, 255, 0.1);
+        }
+
+        .card-green:hover {
+            transform: translateY(-4px);
+            border-color: #00ff88;
+            box-shadow: 0 0 22px rgba(0, 255, 136, 0.4), inset 0 0 10px rgba(0, 255, 136, 0.1);
+        }
+
+        .card-amber:hover {
+            transform: translateY(-4px);
+            border-color: #f39c12;
+            box-shadow: 0 0 22px rgba(243, 156, 18, 0.4), inset 0 0 10px rgba(243, 156, 18, 0.1);
+        }
+
+        .card-purple:hover {
+            transform: translateY(-4px);
+            border-color: #9b59b6;
+            box-shadow: 0 0 22px rgba(155, 89, 182, 0.4), inset 0 0 10px rgba(155, 89, 182, 0.1);
+        }
+
+        .action-btn {
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary-glow {
+            background: #00d2ff;
+            color: #000;
+            box-shadow: 0 0 12px rgba(0, 210, 255, 0.3);
+        }
+
+        .btn-primary-glow:hover {
+            background: #38bdf8;
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.6);
+        }
+
+        .btn-secondary-dark {
+            background: #23354d;
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .btn-secondary-dark:hover {
+            background: #334155;
+            border-color: #00d2ff;
+        }
+
+        .dashboard-box {
+            background: #162436;
+            padding: 24px;
+            border-radius: 14px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Recent Activity Table */
+        .mini-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            text-align: left;
+        }
+
+        .mini-table th {
+            color: #00d2ff;
+            background: #1e2d42;
+            padding: 12px 16px;
+            font-weight: 600;
+        }
+
+        .mini-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            color: #cbd5e1;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Unified Sidebar Navigation -->
+    <div class="sidebar">
+        <h2>PricingAI</h2>
+        <a href="/">🏠 Home</a>
+        <a href="/dashboard">📊 Dashboard</a>
+        <a href="/simulator">🤖 Simulator</a>
+        <a href="/history">📜 History</a>
+        <a href="/analytics">📊 Analytics</a>
+        <a href="/profile">👤 Profile</a>
+        <a href="/settings">⚙️ Settings</a>
+        <a href="/contact">📞 Contact</a>
+        <hr style="border: 0.5px solid #23354d; margin: 15px 0;">
+        <a href="/login" style="color: #00d2ff;">🔑 Login</a>
+        <a href="/register" style="color: #00ff88;">⚡ Register</a>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+
+        <!-- Welcome Banner Header with Quick Action Shortcuts -->
+        <div style="margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+            <div>
+                <h1 style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px; font-size: 28px;">
+                    Welcome, User 👋
+                </h1>
+                <p style="color: #aaa; margin: 0; font-size: 14px;">
+                    AI Pricing Strategy Dashboard Overview & Analytics
+                </p>
+            </div>
+
+            <!-- Quick Action Buttons -->
+            <div style="display: flex; gap: 10px;">
+                <a href="/simulator" class="action-btn btn-primary-glow">
+                    <i class="fas fa-plus"></i> New Simulation
+                </a>
+                <a href="/history" class="action-btn btn-secondary-dark">
+                    <i class="fas fa-list-ul"></i> History Logs
+                </a>
+            </div>
+        </div>
+
+        <!-- Metric KPI Cards Grid with Glowing Borders -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 25px;">
+
+            <div class="metric-card card-cyan" style="border-left: 4px solid #00d2ff;">
+                <p style="color: #aaa; margin: 0 0 6px 0; font-size: 12px; font-weight: 500;">Total Revenue</p>
+                <h2 style="color: #00d2ff; font-size: 26px; margin: 0;">₹{{ revenue }}</h2>
+            </div>
+
+            <div class="metric-card card-green" style="border-left: 4px solid #00ff88;">
+                <p style="color: #aaa; margin: 0 0 6px 0; font-size: 12px; font-weight: 500;">Total Profit</p>
+                <h2 style="color: #00ff88; font-size: 26px; margin: 0;">₹{{ profit }}</h2>
+            </div>
+
+            <div class="metric-card card-amber" style="border-left: 4px solid #f39c12;">
+                <p style="color: #aaa; margin: 0 0 6px 0; font-size: 12px; font-weight: 500;">Demand Logged</p>
+                <h2 style="color: #ffffff; font-size: 26px; margin: 0;">{{ demand }} Units</h2>
+            </div>
+
+            <div class="metric-card card-purple" style="border-left: 4px solid #9b59b6;">
+                <p style="color: #aaa; margin: 0 0 6px 0; font-size: 12px; font-weight: 500;">Strategy Recommendation</p>
+                <h2 style="color: #9b59b6; font-size: 22px; margin: 0;">{{ strategy }}</h2>
+            </div>
+
+        </div>
+
+        <!-- Charts Grid Section (2 Columns) -->
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 25px;">
+
+            <!-- Main Revenue Chart -->
+            <div class="dashboard-box">
+                <h3 style="margin-top: 0; color: #00d2ff; font-size: 16px; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-chart-bar"></i> Financial Performance Analytics
+                </h3>
+                <div style="position: relative; height: 280px; width: 100%;">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Side Strategy Distribution Doughnut Chart -->
+            <div class="dashboard-box">
+                <h3 style="margin-top: 0; color: #00ff88; font-size: 16px; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-chart-pie"></i> Strategy Split
+                </h3>
+                <div style="position: relative; height: 220px; width: 100%; display: flex; justify-content: center;">
+                    <canvas id="strategyPieChart"></canvas>
+                </div>
+                <div style="text-align: center; margin-top: 15px; font-size: 12px; color: #aaa;">
+                    🟢 High Margin: <strong>70%</strong> | 🔵 Competitive: <strong>30%</strong>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Lower Section: Quick Activity Summary & Executive Tip -->
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 30px;">
+
+            <!-- Activity Log Mini Table -->
+            <div class="dashboard-box">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h3 style="margin: 0; color: #fff; font-size: 16px; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-clock"></i> Recent System Activity
+                    </h3>
+                    <a href="/history" style="color: #00d2ff; font-size: 12px; text-decoration: none; font-weight: 600;">View All →</a>
+                </div>
+
+                <div style="overflow-x: auto;">
+                    <table class="mini-table">
+                        <thead>
+                            <tr>
+                                <th>Simulation ID</th>
+                                <th>Demand</th>
+                                <th>Revenue</th>
+                                <th>Profit</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span style="background:#23354d; padding:2px 6px; border-radius:4px; color:#00d2ff;">#105</span></td>
+                                <td>585 Units</td>
+                                <td>₹2,83,140.00</td>
+                                <td style="color:#00ff88; font-weight:600;">+₹1,19,690.52</td>
+                                <td><span style="color:#00ff88; background:rgba(0,255,136,0.1); padding:2px 8px; border-radius:10px; font-size:11px;">Profitable</span></td>
+                            </tr>
+                            <tr>
+                                <td><span style="background:#23354d; padding:2px 6px; border-radius:4px; color:#00d2ff;">#104</span></td>
+                                <td>100 Units</td>
+                                <td>₹4,500.00</td>
+                                <td style="color:#ff4d4d; font-weight:600;">-₹16,350.52</td>
+                                <td><span style="color:#ff4d4d; background:rgba(255,77,77,0.1); padding:2px 8px; border-radius:10px; font-size:11px;">Loss</span></td>
+                            </tr>
+                            <tr>
+                                <td><span style="background:#23354d; padding:2px 6px; border-radius:4px; color:#00d2ff;">#103</span></td>
+                                <td>89 Units</td>
+                                <td>₹6,942.00</td>
+                                <td style="color:#ff4d4d; font-weight:600;">-₹8,525.74</td>
+                                <td><span style="color:#ff4d4d; background:rgba(255,77,77,0.1); padding:2px 8px; border-radius:10px; font-size:11px;">Loss</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- AI Engine Optimization Note -->
+            <div class="dashboard-box" style="border-top: 3px solid #00d2ff; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <h3 style="margin-top: 0; color: #00d2ff; font-size: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-robot"></i> AI Engine Summary
+                    </h3>
+                    <p style="color: #cbd5e1; font-size: 13px; line-height: 1.6; margin: 0 0 15px 0;">
+                        Pricing model elasticity index is performing with <strong>94.2% accuracy</strong>. Higher profit margins are observed when price is configured within 15% above target cost.
+                    </p>
+                </div>
+
+                <a href="/download-pdf?revenue={{ revenue }}&profit={{ profit }}&strategy={{ strategy }}" style="text-align: center; padding: 10px; background: rgba(0,210,255,0.1); border: 1px solid #00d2ff; color: #00d2ff; font-weight: bold; font-size: 12px; border-radius: 8px; text-decoration: none; transition: 0.3s;">
+                    📄 Download PDF Report
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Chart Scripts -->
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            // Chart 1: Financial Bar Performance
+            const ctx1 = document.getElementById('revenueChart');
+            if (ctx1) {
+                new Chart(ctx1, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Cost', 'Selling Price', 'Competitor Price', 'Expected Revenue', 'Predicted Profit'],
+                        datasets: [{
+                            label: 'Financial Performance (₹)',
+                            data: [15000, 25000, 22000, 50000, 15000],
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.7)',
+                                'rgba(54, 162, 235, 0.7)',
+                                'rgba(255, 206, 86, 0.7)',
+                                'rgba(75, 192, 192, 0.7)',
+                                'rgba(153, 102, 255, 0.7)'
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(153, 102, 255, 1)'
+                            ],
+                            borderWidth: 1.5,
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { labels: { color: '#ffffff' } }
+                        },
+                        scales: {
+                            x: { ticks: { color: '#aaaaaa' }, grid: { color: '#23354d' } },
+                            y: { ticks: { color: '#aaaaaa' }, grid: { color: '#23354d' } }
+                        }
+                    }
+                });
+            }
+
+            // Chart 2: Strategy Split Doughnut
+            const ctx2 = document.getElementById('strategyPieChart');
+            if (ctx2) {
+                new Chart(ctx2, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['High Profit', 'Competitive'],
+                        datasets: [{
+                            data: [70, 30],
+                            backgroundColor: ['#00ff88', '#00d2ff'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+
+</body>
+
+</html>

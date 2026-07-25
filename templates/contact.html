@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - PricingAI</title>
+
+    <!-- Dashboard CSS Link -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+
+    <style>
+        .contact-card {
+            background: #162436;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: 0.3s;
+        }
+
+        .contact-card:hover {
+            border-color: #00d2ff;
+            box-shadow: 0 0 18px rgba(0, 210, 255, 0.25);
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px 15px;
+            background: #23354d;
+            border: 1px solid #34495e;
+            border-radius: 8px;
+            color: #fff;
+            outline: none;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        .input-field:focus {
+            border-color: #00d2ff;
+            box-shadow: 0 0 10px rgba(0, 210, 255, 0.3);
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #23354d;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Unified Sidebar Navigation -->
+    <div class="sidebar">
+        <h2>PricingAI</h2>
+        <a href="/">🏠 Home</a>
+        <a href="/dashboard">📊 Dashboard</a>
+        <a href="/simulator">🤖 Simulator</a>
+        <a href="/history">📜 History</a>
+        <a href="/analytics">📊 Analytics</a>
+        <a href="/settings">⚙️ Settings</a>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+
+        <!-- Title Section -->
+        <div style="margin-bottom: 25px;">
+            <h1 style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                📞 Get in Touch with Support
+            </h1>
+            <p style="color: #aaa; margin: 0; font-size: 15px;">
+                Have questions or feedback about PricingAI? Send us a message below.
+            </p>
+        </div>
+
+        <!-- 2-Column Grid Layout -->
+        <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 25px; align-items: start;">
+
+            <!-- Left Box: Official Contact Information -->
+            <div class="contact-card" style="border-top: 4px solid #00d2ff;">
+                <h3 style="margin-top: 0; color: #00d2ff; font-size: 18px; margin-bottom: 15px;">
+                    📍 Support & Contact Channels
+                </h3>
+                <p style="color: #aaa; font-size: 13px; line-height: 1.6; margin-bottom: 20px;">
+                    Our AI platform engineering team is available for system assistance and queries.
+                </p>
+
+                <div class="info-item">
+                    <span style="font-size: 22px;">📧</span>
+                    <div>
+                        <strong style="display: block; color: #fff; font-size: 13px;">Email Support</strong>
+                        <span style="color: #00d2ff; font-size: 13px;">support@pricingai.com</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span style="font-size: 22px;">📍</span>
+                    <div>
+                        <strong style="display: block; color: #fff; font-size: 13px;">Platform Lab</strong>
+                        <span style="color: #aaa; font-size: 13px;">JMIETI Computer Science Department</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span style="font-size: 22px;">⚡</span>
+                    <div>
+                        <strong style="display: block; color: #fff; font-size: 13px;">Response Time</strong>
+                        <span style="color: #00ff88; font-size: 13px;">Within 24 Hours</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Box: Message Form -->
+            <div class="contact-card" style="border-top: 4px solid #00ff88;">
+                <h3 style="margin-top: 0; color: #00ff88; font-size: 18px; margin-bottom: 20px;">
+                    💬 Send Us a Direct Message
+                </h3>
+
+                <form action="/contact" method="POST" onsubmit="handleMessage(event)" style="display: flex; flex-direction: column; gap: 16px;">
+
+                    <div>
+                        <label style="display: block; color: #ccc; margin-bottom: 6px; font-size: 13px; font-weight: 500;">Your Name</label>
+                        <input type="text" id="contactName" name="name" class="input-field" placeholder="Enter full name" required>
+                    </div>
+
+                    <div>
+                        <label style="display: block; color: #ccc; margin-bottom: 6px; font-size: 13px; font-weight: 500;">Your Email</label>
+                        <input type="email" id="contactEmail" name="email" class="input-field" placeholder="Enter email address" required>
+                    </div>
+
+                    <div>
+                        <label style="display: block; color: #ccc; margin-bottom: 6px; font-size: 13px; font-weight: 500;">Your Message</label>
+                        <textarea id="contactMsg" name="message" rows="4" class="input-field" placeholder="Write your message or inquiry here..." required style="resize: none;"></textarea>
+                    </div>
+
+                    <button type="submit" style="padding: 12px; background: #00d2ff; color: #000; font-weight: bold; font-size: 14px; border: none; border-radius: 8px; cursor: pointer; transition: 0.3s; box-shadow: 0 0 12px rgba(0, 210, 255, 0.3);">
+                        🚀 Send Message
+                    </button>
+
+                </form>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        function handleMessage(e) {
+            e.preventDefault();
+            const name = document.getElementById('contactName').value;
+            alert(`Thank you, ${name}! Your message has been submitted successfully.`);
+            document.getElementById('contactName').value = '';
+            document.getElementById('contactEmail').value = '';
+            document.getElementById('contactMsg').value = '';
+        }
+    </script>
+
+</body>
+
+</html>

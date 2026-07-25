@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction History - PricingAI</title>
+
+    <!-- Dashboard CSS Link -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        .history-card {
+            background: #162436;
+            border-radius: 14px;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            overflow: hidden;
+        }
+
+        .kpi-card {
+            background: #162436;
+            padding: 18px 22px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.35s ease-in-out;
+            user-select: none;
+        }
+
+        .kpi-card-cyan:hover {
+            transform: translateY(-4px);
+            border-color: #00d2ff;
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.4);
+        }
+
+        .kpi-card-green:hover {
+            transform: translateY(-4px);
+            border-color: #00ff88;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
+        }
+
+        .kpi-card-amber:hover {
+            transform: translateY(-4px);
+            border-color: #f39c12;
+            box-shadow: 0 0 20px rgba(243, 156, 18, 0.4);
+        }
+
+        .kpi-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .search-box {
+            width: 100%;
+            max-width: 280px;
+            padding: 9px 14px 9px 36px;
+            background: #23354d;
+            border: 1px solid #34495e;
+            border-radius: 8px;
+            color: #fff;
+            outline: none;
+            font-size: 13px;
+            transition: 0.3s;
+        }
+
+        .search-box:focus {
+            border-color: #00d2ff;
+            box-shadow: 0 0 12px rgba(0, 210, 255, 0.4);
+        }
+
+        .custom-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        .custom-table th {
+            background: #1e2d42;
+            color: #00d2ff;
+            padding: 14px 18px;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .custom-table td {
+            padding: 14px 18px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            color: #cbd5e1;
+        }
+
+        .custom-table tbody tr:hover {
+            background: rgba(0, 210, 255, 0.08);
+        }
+
+        .badge-profit {
+            background: rgba(0, 255, 136, 0.12);
+            color: #00ff88;
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .badge-loss {
+            background: rgba(255, 77, 77, 0.12);
+            color: #ff4d4d;
+            border: 1px solid rgba(255, 77, 77, 0.3);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .id-pill {
+            background: #23354d;
+            color: #00d2ff;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .btn-view {
+            background: rgba(0, 210, 255, 0.15);
+            color: #00d2ff;
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-view:hover {
+            background: #00d2ff;
+            color: #000;
+            box-shadow: 0 0 10px rgba(0, 210, 255, 0.5);
+        }
+
+        .btn-delete {
+            background: transparent;
+            border: none;
+            color: #64748b;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.2s;
+            padding: 6px;
+            border-radius: 6px;
+            text-decoration: none;
+        }
+
+        .btn-delete:hover {
+            color: #ff4d4d;
+            background: rgba(255, 77, 77, 0.15);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <h2>PricingAI</h2>
+        <a href="/">🏠 Home</a>
+        <a href="/dashboard">📊 Dashboard</a>
+        <a href="/simulator">🤖 Simulator</a>
+        <a href="/history" style="color: #00d2ff; font-weight: bold;">📜 History</a>
+        <a href="/analytics">📊 Analytics</a>
+        <a href="/profile">👤 Profile</a>
+        <a href="/settings">⚙️ Settings</a>
+        <a href="/contact">📞 Contact</a>
+        <hr style="border: 0.5px solid #23354d; margin: 15px 0;">
+        <a href="/login" style="color: #00d2ff;">🔑 Login</a>
+        <a href="/register" style="color: #00ff88;">⚡ Register</a>
+    </div>
+
+    <div class="main-content">
+
+        <div style="margin-bottom: 25px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 15px;">
+            <div>
+                <h1 style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                    📜 Simulation Prediction Logs
+                </h1>
+                <p style="color: #aaa; margin: 0; font-size: 15px;">
+                    Historical records of all pricing model simulations and profit/loss performance.
+                </p>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button onclick="exportTableToCSV('pricing_history.csv')" style="padding: 9px 16px; background: #00d2ff; color: #000; border: none; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                    <i class="fas fa-file-csv"></i> Export CSV
+                </button>
+                <a href="/clear-history" onclick="return confirm('Clear all history records?')" style="padding: 9px 16px; background: rgba(255, 77, 77, 0.15); color: #ff4d4d; border: 1px solid rgba(255, 77, 77, 0.3); border-radius: 8px; font-weight: 600; font-size: 13px; text-decoration: none; display: flex; align-items: center; gap: 6px;">
+                    <i class="fas fa-trash-alt"></i> Clear All
+                </a>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; margin-bottom: 25px;">
+            <div class="kpi-card kpi-card-cyan" style="border-left: 4px solid #00d2ff;">
+                <div class="kpi-icon" style="background: rgba(0, 210, 255, 0.15); color: #00d2ff;">
+                    <i class="fas fa-database"></i>
+                </div>
+                <div>
+                    <span style="display: block; color: #aaa; font-size: 12px;">Total Simulations</span>
+                    <strong style="color: #fff; font-size: 20px;">{{ records|length if records else 0 }} Runs</strong>
+                </div>
+            </div>
+
+            <div class="kpi-card kpi-card-green" style="border-left: 4px solid #00ff88;">
+                <div class="kpi-icon" style="background: rgba(0, 255, 136, 0.15); color: #00ff88;">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div>
+                    <span style="display: block; color: #aaa; font-size: 12px;">Database Status</span>
+                    <strong style="color: #00ff88; font-size: 16px;">SQLite Synchronized</strong>
+                </div>
+            </div>
+
+            <div class="kpi-card kpi-card-amber" style="border-left: 4px solid #f39c12;" onclick="document.getElementById('searchInput').focus()">
+                <div class="kpi-icon" style="background: rgba(243, 156, 18, 0.15); color: #f39c12;">
+                    <i class="fas fa-filter"></i>
+                </div>
+                <div>
+                    <span style="display: block; color: #aaa; font-size: 12px;">Data Search</span>
+                    <strong style="color: #fff; font-size: 16px;">Live Filter Active</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="history-card" id="historyCardSection">
+            <div style="padding: 16px 25px; background: #1e2d42; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                <span style="color: #fff; font-weight: 600; font-size: 15px;">📋 Stored Predictions Table</span>
+                <div style="position: relative;">
+                    <i class="fas fa-search" style="position: absolute; left: 12px; top: 11px; color: #64748b; font-size: 12px;"></i>
+                    <input type="text" id="searchInput" onkeyup="filterHistoryTable()" class="search-box" placeholder="Filter records...">
+                </div>
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table class="custom-table" id="historyTable">
+                    <thead>
+                        <tr>
+                            <th onclick="sortTable(0)">ID ↕</th>
+                            <th onclick="sortTable(1)">Cost ↕</th>
+                            <th onclick="sortTable(2)">Selling Price ↕</th>
+                            <th onclick="sortTable(3)">Demand ↕</th>
+                            <th onclick="sortTable(4)">Revenue ↕</th>
+                            <th onclick="sortTable(5)">Profit / Loss Status ↕</th>
+                            <th onclick="sortTable(6)">Date & Time ↕</th>
+                            <th style="text-align: center;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if records %}
+                            {% for row in records %}
+                            <tr>
+                                <td><span class="id-pill">#{{ row[0] }}</span></td>
+                                <td>₹{{ "{:,.2f}".format(row[1]) if row[1] is number else row[1] }}</td>
+                                <td>₹{{ "{:,.2f}".format(row[2]) if row[2] is number else row[2] }}</td>
+                                <td><strong style="color: #fff;">{{ row[4] }}</strong> Units</td>
+                                <td><span style="color: #00d2ff; font-weight: 600;">₹{{ "{:,.2f}".format(row[5]) if row[5] is number else row[5] }}</span></td>
+                                <td>
+                                    {% if row[6] >= 0 %}
+                                        <span class="badge-profit"><i class="fas fa-arrow-up"></i> +₹{{ "{:,.2f}".format(row[6]) }}</span>
+                                    {% else %}
+                                        <span class="badge-loss"><i class="fas fa-arrow-down"></i> -₹{{ "{:,.2f}".format(row[6]|abs) }}</span>
+                                    {% endif %}
+                                </td>
+                                <td style="color: #94a3b8; font-size: 13px;"><i class="far fa-clock" style="margin-right: 4px;"></i> {{ row[7] }}</td>
+                                <td style="text-align: center; display: flex; gap: 8px; justify-content: center; align-items: center;">
+                                    <!-- View Detailed Result Button -->
+                                    <a href="/view-result/{{ row[0] }}" class="btn-view" title="View Detailed Prediction Page">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                    <!-- Delete Button -->
+                                    <a href="/delete-history/{{ row[0] }}" onclick="return confirm('Delete record #{{ row[0] }}?')" class="btn-delete" title="Delete Record">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="8" style="text-align: center; padding: 40px; color: #aaa;">
+                                    🚀 No predictions saved yet. Launch <a href="/simulator" style="color: #00d2ff;">Simulator</a>!
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function filterHistoryTable() {
+            const input = document.getElementById("searchInput");
+            const filter = input.value.toLowerCase();
+            const table = document.getElementById("historyTable");
+            const tr = table.getElementsByTagName("tr");
+            for (let i = 1; i < tr.length; i++) {
+                let textContent = tr[i].textContent || tr[i].innerText;
+                tr[i].style.display = (textContent.toLowerCase().indexOf(filter) > -1) ? "" : "none";
+            }
+        }
+
+        function exportTableToCSV(filename) {
+            let csv = [];
+            const rows = document.querySelectorAll("#historyTable tr");
+            for (let i = 0; i < rows.length; i++) {
+                let row = [], cols = rows[i].querySelectorAll("td, th");
+                for (let j = 0; j < cols.length - 1; j++) {
+                    let text = cols[j].innerText.replace(/,/g, '').replace(/\n/g, ' ');
+                    row.push('"' + text.trim() + '"');
+                }
+                csv.push(row.join(","));
+            }
+            const csvFile = new Blob([csv.join("\n")], { type: "text/csv" });
+            const downloadLink = document.createElement("a");
+            downloadLink.download = filename;
+            downloadLink.href = window.URL.createObjectURL(csvFile);
+            downloadLink.style.display = "none";
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+        }
+
+        function sortTable(n) {
+            let table = document.getElementById("historyTable"), rows, switching = true, i, x, y, shouldSwitch, dir = "asc", switchcount = 0;
+            while (switching) {
+                switching = false; rows = table.rows;
+                for (i = 1; i < (rows.length - 1); i++) {
+                    shouldSwitch = false;
+                    x = rows[i].getElementsByTagName("TD")[n];
+                    y = rows[i + 1].getElementsByTagName("TD")[n];
+                    let xVal = parseFloat(x.innerText.replace(/[^0-9.-]+/g, "")) || x.innerText.toLowerCase();
+                    let yVal = parseFloat(y.innerText.replace(/[^0-9.-]+/g, "")) || y.innerText.toLowerCase();
+                    if (dir == "asc" && xVal > yVal) { shouldSwitch = true; break; }
+                    if (dir == "desc" && xVal < yVal) { shouldSwitch = true; break; }
+                }
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true; switchcount++;
+                } else if (switchcount == 0 && dir == "asc") {
+                    dir = "desc"; switching = true;
+                }
+            }
+        }
+    </script>
+
+</body>
+
+</html>

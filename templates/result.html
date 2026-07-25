@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Prediction Results - PricingAI</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        .result-card {
+            background: #162436;
+            padding: 24px;
+            border-radius: 14px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transition: all 0.35s ease-in-out;
+        }
+
+        .result-card:hover {
+            border-color: #00d2ff;
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.25);
+        }
+
+        .kpi-card {
+            background: #162436;
+            padding: 22px 24px;
+            border-radius: 14px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease-in-out;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .btn-action-glow {
+            padding: 10px 18px;
+            background: #00d2ff;
+            color: #000;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 13px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.35);
+            transition: 0.3s;
+        }
+
+        .btn-action-glow:hover {
+            background: #38bdf8;
+            box-shadow: 0 0 22px rgba(0, 210, 255, 0.6);
+        }
+
+        .btn-action-view {
+            padding: 10px 18px;
+            background: rgba(0, 255, 136, 0.15);
+            color: #00ff88;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 13px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            transition: 0.3s;
+        }
+
+        .btn-action-view:hover {
+            background: #00ff88;
+            color: #000;
+            box-shadow: 0 0 18px rgba(0, 255, 136, 0.5);
+        }
+
+        .btn-action-dark {
+            padding: 10px 18px;
+            background: #23354d;
+            color: #fff;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .btn-action-dark:hover {
+            background: #334155;
+            border-color: #00d2ff;
+        }
+
+        .badge-tag {
+            background: rgba(0, 210, 255, 0.12);
+            color: #00d2ff;
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* =========================================================
+           PRINT MEDIA STYLING (Hides Sidebar & Action Buttons)
+           ========================================================= */
+        @media print {
+            .sidebar, 
+            .action-toolbar,
+            button, 
+            a.btn-action-dark, 
+            a.btn-action-view, 
+            a.btn-action-glow {
+                display: none !important;
+            }
+
+            body {
+                background: #ffffff !important;
+                color: #000000 !important;
+            }
+
+            .main-content {
+                margin-left: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+            }
+
+            .result-card, .kpi-card {
+                background: #ffffff !important;
+                color: #000000 !important;
+                border: 1px solid #ddd !important;
+                box-shadow: none !important;
+            }
+
+            h1, h2, h3, p, strong {
+                color: #000000 !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <h2>PricingAI</h2>
+        <a href="/">🏠 Home</a>
+        <a href="/dashboard">📊 Dashboard</a>
+        <a href="/simulator">🤖 Simulator</a>
+        <a href="/csv-qa"><i class="fas fa-file-csv"></i> CSV AI Assistant</a>
+        <a href="/history">📜 History</a>
+        <a href="/analytics">📊 Analytics</a>
+        <a href="/profile">👤 Profile</a>
+        <a href="/settings">⚙️ Settings</a>
+        <a href="/contact">📞 Contact</a>
+        <hr style="border: 0.5px solid #23354d; margin: 15px 0;">
+        <a href="/login" style="color: #00d2ff;">🔑 Login</a>
+        <a href="/register" style="color: #00ff88;">⚡ Register</a>
+    </div>
+
+    <div class="main-content">
+
+        <div style="margin-bottom: 25px;">
+            <h1 style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                📊 AI Prediction Results
+            </h1>
+            <p style="color: #aaa; margin: 0; font-size: 15px;">
+                Comprehensive financial forecast and market strategy analysis generated by AI.
+            </p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 25px;">
+            <div class="kpi-card" style="border-left: 4px solid #00d2ff;">
+                <p style="color: #aaa; margin: 0 0 6px 0; font-size: 12px; font-weight: 500;">Total Projected Revenue</p>
+                <h2 style="color: #00d2ff; font-size: 26px; margin: 0;">₹{{ fmt_revenue }}</h2>
+            </div>
+
+            <div class="kpi-card" style="border-left: 4px solid #00ff88;">
+                <p style="color: #aaa; margin: 0 0 6px 0; font-size: 12px; font-weight: 500;">Net Predicted Profit</p>
+                <h2 style="color: #00ff88; font-size: 26px; margin: 0;">₹{{ fmt_profit }}</h2>
+            </div>
+
+            <div class="kpi-card" style="border-left: 4px solid #9b59b6;">
+                <p style="color: #aaa; margin: 0 0 6px 0; font-size: 12px; font-weight: 500;">Recommended Strategy</p>
+                <h2 style="color: #9b59b6; font-size: 22px; margin: 0;">{{ strategy }}</h2>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1.6fr 1fr; gap: 22px; margin-bottom: 25px;">
+            <div class="result-card">
+                <h3 style="margin-top: 0; color: #00d2ff; font-size: 16px; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-chart-bar"></i> Prediction Visual Breakdown
+                </h3>
+                <div style="position: relative; height: 260px; width: 100%;">
+                    <canvas id="resultBreakdownChart"></canvas>
+                </div>
+            </div>
+
+            <div class="result-card" style="border-top: 3px solid #00ff88; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <h3 style="margin-top: 0; color: #00ff88; font-size: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-lightbulb"></i> Model Executive Summary
+                    </h3>
+                    <p style="color: #cbd5e1; font-size: 13px; line-height: 1.6; margin-bottom: 15px;">
+                        The Machine Learning regression algorithm evaluated your unit cost (₹{{ fmt_cost }}), selling price (₹{{ fmt_price }}), and demand ({{ demand }} Units) to compute overall financial feasibility.
+                    </p>
+
+                    <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px; color: #aaa; margin-bottom: 20px;">
+                        <div>• <strong>Cost per Unit:</strong> ₹{{ fmt_cost }}</div>
+                        <div>• <strong>Target Selling Price:</strong> ₹{{ fmt_price }}</div>
+                        <div>• <strong>Market Benchmark:</strong> ₹{{ fmt_competitor }}</div>
+                        <div>• <strong>Projected Volume:</strong> {{ demand }} Units</div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <span class="badge-tag">Verified ML Output</span>
+                    <span class="badge-tag" style="border-color:#00ff88; color:#00ff88; background:rgba(0,255,136,0.1);">Database Logged</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Action Toolbar (Hidden during print) -->
+        <div class="result-card action-toolbar" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <a href="/simulator" class="btn-action-dark">
+                    <i class="fas fa-redo"></i> New Simulation
+                </a>
+                <a href="/dashboard" class="btn-action-dark">
+                    <i class="fas fa-chart-line"></i> Go to Dashboard
+                </a>
+                <a href="/history" class="btn-action-dark">
+                    <i class="fas fa-history"></i> View History
+                </a>
+            </div>
+
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <a href="/report?cost={{ cost }}&price={{ price }}&competitor={{ competitor }}&demand={{ demand }}&profit={{ profit }}&strategy={{ strategy }}" class="btn-action-view">
+                    <i class="fas fa-file-alt"></i> View Full Report
+                </a>
+                <button onclick="window.print()" class="btn-action-dark">
+                    <i class="fas fa-print"></i> Print Report
+                </button>
+                <a href="/download-pdf?revenue={{ fmt_revenue }}&profit={{ fmt_profit }}&strategy={{ strategy }}" class="btn-action-glow">
+                    <i class="fas fa-download"></i> Download PDF
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const ctx = document.getElementById('resultBreakdownChart');
+            if (ctx) {
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Cost Total', 'Selling Total', 'Revenue', 'Predicted Profit'],
+                        datasets: [{
+                            label: 'Amount in ₹',
+                            data: [
+                                {{ cost * demand }},
+                                {{ price * demand }},
+                                {{ revenue }},
+                                {{ profit }}
+                            ],
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.75)',
+                                'rgba(54, 162, 235, 0.75)',
+                                'rgba(0, 210, 255, 0.75)',
+                                'rgba(0, 255, 136, 0.75)'
+                            ],
+                            borderColor: [
+                                '#ff6384',
+                                '#36a2eb',
+                                '#00d2ff',
+                                '#00ff88'
+                            ],
+                            borderWidth: 1.5,
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { labels: { color: '#ffffff' } }
+                        },
+                        scales: {
+                            x: { ticks: { color: '#aaaaaa' }, grid: { color: '#23354d' } },
+                            y: { ticks: { color: '#aaaaaa' }, grid: { color: '#23354d' } }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+
+</body>
+
+</html>

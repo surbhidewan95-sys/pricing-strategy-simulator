@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV AI Assistant - PricingAI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary-cyan: #00d2ff;
+            --accent-green: #00ff88;
+            --card-bg: rgba(22, 36, 54, 0.7);
+            --border-glow: rgba(0, 210, 255, 0.2);
+        }
+
+        body {
+            background-color: #0b1120;
+            color: #f8fafc;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        .qa-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .header-title i {
+            font-size: 36px;
+            color: var(--primary-cyan);
+            background: rgba(0, 210, 255, 0.1);
+            padding: 12px;
+            border-radius: 14px;
+            border: 1px solid var(--border-glow);
+        }
+
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-glow);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            border-color: rgba(0, 210, 255, 0.4);
+            box-shadow: 0 20px 40px rgba(0, 210, 255, 0.1);
+        }
+
+        /* File Upload Custom Area */
+        .drop-zone {
+            border: 2px dashed var(--primary-cyan);
+            border-radius: 16px;
+            padding: 35px 20px;
+            text-align: center;
+            background: rgba(0, 210, 255, 0.02);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .drop-zone:hover {
+            background: rgba(0, 210, 255, 0.08);
+            border-color: var(--accent-green);
+            transform: translateY(-2px);
+        }
+
+        .drop-zone i {
+            font-size: 45px;
+            color: var(--primary-cyan);
+            margin-bottom: 15px;
+        }
+
+        .file-input-hidden {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .file-name-display {
+            margin-top: 10px;
+            font-size: 14px;
+            color: var(--accent-green);
+            font-weight: 600;
+        }
+
+        /* Action Buttons */
+        .btn-action {
+            padding: 12px 28px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-cyan {
+            background: var(--primary-cyan);
+            color: #0b1120;
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.3);
+        }
+
+        .btn-cyan:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px rgba(0, 210, 255, 0.5);
+        }
+
+        .btn-green {
+            background: var(--accent-green);
+            color: #0b1120;
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+        }
+
+        .btn-green:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px rgba(0, 255, 136, 0.5);
+        }
+
+        /* Chips Section */
+        .chip-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0 20px 0;
+        }
+
+        .chip {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #cbd5e1;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .chip:hover {
+            background: rgba(0, 210, 255, 0.15);
+            border-color: var(--primary-cyan);
+            color: var(--primary-cyan);
+            transform: scale(1.05);
+        }
+
+        /* Search Input Bar */
+        .search-box {
+            display: flex;
+            gap: 12px;
+            background: rgba(15, 23, 42, 0.8);
+            padding: 8px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .search-box input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 12px 16px;
+            color: #fff;
+            font-size: 15px;
+            outline: none;
+        }
+
+        /* Result Display Area */
+        .response-box {
+            background: #070c18;
+            border-radius: 14px;
+            border-left: 4px solid var(--accent-green);
+            padding: 22px;
+            margin-top: 25px;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+        }
+
+        .response-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            color: var(--primary-cyan);
+            font-weight: 700;
+        }
+
+        .response-content {
+            color: #e2e8f0;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+
+        .empty-placeholder {
+            text-align: center;
+            padding: 20px;
+            color: #64748b;
+        }
+        .empty-placeholder i {
+            font-size: 40px;
+            margin-bottom: 10px;
+            color: rgba(0, 210, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2 style="color: var(--primary-cyan); margin-bottom: 25px;"><i class="fas fa-robot"></i> PricingAI</h2>
+        <a href="/">🏠 Home</a>
+        <a href="/dashboard">📊 Dashboard</a>
+        <a href="/simulator">🤖 Pricing Simulator</a>
+        <a href="/csv-qa" style="color: var(--primary-cyan); font-weight: bold; background: rgba(0, 210, 255, 0.1);"><i class="fas fa-file-csv"></i> CSV AI Assistant</a>
+        <a href="/history">📜 History Logs</a>
+        <a href="/analytics">📈 Analytics</a>
+    </div>
+
+    <div class="main-content">
+        <div class="qa-container">
+            
+            <div class="header-title">
+                <i class="fas fa-brain"></i>
+                <div>
+                    <h1 style="margin: 0; font-size: 28px; color: #fff;">Smart CSV Data Assistant</h1>
+                    <p style="margin: 5px 0 0 0; color: #94a3b8; font-size: 14px;">Upload dataset CSV files to perform intelligent automated analytics and query answering.</p>
+                </div>
+            </div>
+
+            <!-- 1. Custom File Upload Card -->
+            <div class="glass-card">
+                <form action="/csv-qa" method="POST" enctype="multipart/form-data">
+                    <div class="drop-zone">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <h3 style="margin: 0 0 8px 0; color: #fff;">Select or Drag & Drop Dataset (.csv)</h3>
+                        <p style="margin: 0; color: #64748b; font-size: 13px;">Click anywhere inside this area to browse file</p>
+                        <div class="file-name-display" id="fileNameDisplay">
+                            {% if filename %}
+                                📄 Loaded File: {{ filename }}
+                            {% else %}
+                                No file selected
+                            {% endif %}
+                        </div>
+                        <input type="file" name="csv_file" accept=".csv" required class="file-input-hidden" onchange="updateFileName(this)">
+                    </div>
+                    <div style="text-align: right; margin-top: 18px;">
+                        <button type="submit" class="btn-action btn-cyan"><i class="fas fa-upload"></i> Upload & Process Dataset</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- 2. Interactive Query Card (Shows ONLY when CSV is uploaded) -->
+            <div class="glass-card">
+                {% if csv_uploaded or answer %}
+                    <h3 style="margin-top: 0; color: #fff;"><i class="fas fa-comments" style="color: var(--accent-green);"></i> Ask Questions About Your Data</h3>
+                    
+                    <p style="color: #94a3b8; font-size: 13px; margin-bottom: 8px;">Click sample queries to auto-fill:</p>
+                    <div class="chip-container">
+                        <span class="chip" onclick="fillQuery('show top 5 rows')"><i class="fas fa-table"></i> show top 5 rows</span>
+                        <span class="chip" onclick="fillQuery('summary statistics')"><i class="fas fa-chart-pie"></i> summary statistics</span>
+                        <span class="chip" onclick="fillQuery('average price')"><i class="fas fa-calculator"></i> average price</span>
+                        <span class="chip" onclick="fillQuery('total row count')"><i class="fas fa-list-ol"></i> total row count</span>
+                        <span class="chip" onclick="fillQuery('highest profit')"><i class="fas fa-arrow-up"></i> highest profit</span>
+                        <span class="chip" onclick="fillQuery('missing values')"><i class="fas fa-exclamation-triangle"></i> missing values</span>
+                    </div>
+
+                    <form action="/csv-qa" method="POST">
+                        <div class="search-box">
+                            <input type="text" id="queryInput" name="question" placeholder="e.g. What is the average price or total sales?" required>
+                            <button type="submit" class="btn-action btn-green"><i class="fas fa-paper-plane"></i> Ask Query</button>
+                        </div>
+                    </form>
+
+                    <!-- Output Box -->
+                    {% if answer %}
+                    <div class="response-box">
+                        <div class="response-header">
+                            <span><i class="fas fa-terminal"></i> AI Analysis Result</span>
+                            <span style="font-size: 12px; color: #00ff88; background: rgba(0,255,136,0.1); padding: 3px 10px; border-radius: 10px;">PROCESSED</span>
+                        </div>
+                        <div class="response-content">{{ answer }}</div>
+                    </div>
+                    {% endif %}
+
+                {% else %}
+                    <!-- Empty State (Before Upload) -->
+                    <div class="empty-placeholder">
+                        <i class="fas fa-file-csv"></i>
+                        <h4 style="color: #94a3b8; margin: 10px 0 5px 0;">No Dataset Uploaded Yet</h4>
+                        <p style="font-size: 13px; margin: 0;">Please upload a CSV file above to enable data queries and AI analytics.</p>
+                    </div>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function updateFileName(input) {
+            const display = document.getElementById('fileNameDisplay');
+            if (input.files && input.files[0]) {
+                display.innerText = '📄 Selected File: ' + input.files[0].name;
+            } else {
+                display.innerText = 'No file selected';
+            }
+        }
+
+        function fillQuery(text) {
+            document.getElementById('queryInput').value = text;
+        }
+    </script>
+
+</body>
+</html>

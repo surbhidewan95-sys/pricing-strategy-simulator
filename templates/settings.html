@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - PricingAI</title>
+
+    <!-- Dashboard CSS Link -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+
+    <style>
+        /* Light Mode Styles */
+        body.light-mode {
+            background-color: #f1f5f9 !important;
+            color: #0f172a !important;
+        }
+        body.light-mode .main-content h1,
+        body.light-mode .main-content h3,
+        body.light-mode .main-content h4 {
+            color: #0f172a !important;
+        }
+        body.light-mode div[style*="background: #162436"],
+        body.light-mode div[style*="background:#162436"] {
+            background: #ffffff !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+        }
+        body.light-mode button, 
+        body.light-mode a[style*="background: #23354d"] {
+            background: #e2e8f0 !important;
+            color: #0f172a !important;
+            border-color: #cbd5e1 !important;
+        }
+
+        /* Password Modal Styling */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center; align-items: center;
+            z-index: 1000;
+        }
+        .modal-box {
+            background: #162436; padding: 25px; border-radius: 12px;
+            width: 340px; color: #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Unified Sidebar Navigation -->
+    <div class="sidebar">
+        <h2>PricingAI</h2>
+        <a href="/">🏠 Home</a>
+        <a href="/dashboard">📊 Dashboard</a>
+        <a href="/simulator">🤖 Simulator</a>
+        <a href="/history">📜 History</a>
+        <a href="/analytics">📊 Analytics</a>
+        <a href="/settings">⚙️ Settings</a>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content" style="min-height: 90vh; display: flex; flex-direction: column; justify-content: space-between;">
+
+        <div>
+            <!-- Title Section -->
+            <div style="margin-bottom: 25px;">
+                <h1 style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                    ⚙️ System Settings
+                </h1>
+                <p style="color: #aaa; margin: 0; font-size: 15px;">
+                    Manage your account preferences, system security, and dashboard themes.
+                </p>
+            </div>
+
+            <!-- Settings Cards Grid -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 25px;">
+
+                <!-- Card 1: Appearance Settings -->
+                <div style="background: #162436; padding: 22px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); border-top: 3px solid #00d2ff;">
+                    <h3 style="margin-top: 0; color: #00d2ff; font-size: 18px; margin-bottom: 12px;">
+                        🎨 Appearance & Theme
+                    </h3>
+                    <p style="color: #aaa; font-size: 13px; margin-bottom: 18px;">Customize visual preferences and dark mode color tones.</p>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <button type="button" onclick="toggleTheme()" style="width: 100%; padding: 12px 15px; background: #23354d; color: #fff; border: 1px solid #34495e; border-radius: 8px; font-weight: 500; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                            <span>🌓 Change Theme</span>
+                            <span id="themeStatus" style="color: #00d2ff; font-size: 12px; font-weight: bold;">Dark Mode</span>
+                        </button>
+
+                        <button type="button" onclick="alert('Grid Layout Mode is Active!')" style="width: 100%; padding: 12px 15px; background: #23354d; color: #fff; border: 1px solid #34495e; border-radius: 8px; font-weight: 500; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                            <span>🖥️ Grid Layout Mode</span>
+                            <span style="color: #00ff88; font-size: 12px;">Active</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Card 2: Security Settings -->
+                <div style="background: #162436; padding: 22px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); border-top: 3px solid #00ff88;">
+                    <h3 style="margin-top: 0; color: #00ff88; font-size: 18px; margin-bottom: 12px;">
+                        🔒 Account & Security
+                    </h3>
+                    <p style="color: #aaa; font-size: 13px; margin-bottom: 18px;">Manage password updates and multi-factor authentication.</p>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <button type="button" onclick="openModal()" style="width: 100%; padding: 12px 15px; background: #23354d; color: #fff; border: 1px solid #34495e; border-radius: 8px; font-weight: 500; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                            <span>🔑 Change Password</span>
+                            <span style="color: #aaa; font-size: 12px;">Update</span>
+                        </button>
+
+                        <button type="button" onclick="alert('2FA Configuration: Enabled for Admin!')" style="width: 100%; padding: 12px 15px; background: #23354d; color: #fff; border: 1px solid #34495e; border-radius: 8px; font-weight: 500; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                            <span>🛡️ Two-Factor Auth (2FA)</span>
+                            <span style="color: #ff4d4d; font-size: 12px;">Configure</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Card 3: Data & Storage -->
+                <div style="background: #162436; padding: 22px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); border-top: 3px solid #f39c12;">
+                    <h3 style="margin-top: 0; color: #f39c12; font-size: 18px; margin-bottom: 12px;">
+                        ⚡ Data & Storage
+                    </h3>
+                    <p style="color: #aaa; font-size: 13px; margin-bottom: 18px;">Export database prediction history or clear local cache.</p>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <a href="/history" style="text-decoration: none; padding: 12px 15px; background: #23354d; color: #fff; border: 1px solid #34495e; border-radius: 8px; font-weight: 500; font-size: 14px; display: flex; justify-content: space-between; align-items: center;">
+                            <span>📥 View & Export Data</span>
+                            <span style="color: #f39c12; font-size: 12px;">History DB</span>
+                        </a>
+
+                        <button type="button" onclick="resetCache()" style="width: 100%; padding: 12px 15px; background: #23354d; color: #fff; border: 1px solid #34495e; border-radius: 8px; font-weight: 500; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                            <span>🧹 Clear Cache & Refresh</span>
+                            <span style="color: #aaa; font-size: 12px;">Clean</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Danger Zone Box -->
+        <div style="background: #162436; padding: 18px 22px; border-radius: 12px; border-left: 4px solid #ff4d4d; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+            <div>
+                <h4 style="margin: 0 0 4px 0; color: #ff4d4d; font-size: 16px;">🚪 Session Control</h4>
+                <p style="margin: 0; color: #aaa; font-size: 13px;">Logout from current session safely.</p>
+            </div>
+            
+            <a href="/login" style="padding: 10px 22px; background: #ff4d4d; color: #fff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 14px; box-shadow: 0 0 10px rgba(255, 77, 77, 0.4);">
+                Logout
+            </a>
+        </div>
+
+    </div>
+
+    <!-- Password Reset Modal -->
+    <div id="pwdModal" class="modal-overlay">
+        <div class="modal-box">
+            <h3 style="margin-top:0; color:#00d2ff;">🔑 Change Password</h3>
+            <div style="margin-bottom:12px;">
+                <label style="font-size:12px; color:#aaa; display:block; margin-bottom:5px;">New Password</label>
+                <input type="password" id="newPwd" placeholder="Enter new password" style="width:100%; padding:10px; background:#23354d; border:1px solid #34495e; color:#fff; border-radius:6px; box-sizing:border-box;">
+            </div>
+            <div style="display:flex; gap:10px; margin-top:18px;">
+                <button type="button" onclick="savePassword()" style="flex:1; padding:10px; background:#00d2ff; color:#000; border:none; font-weight:bold; border-radius:6px; cursor:pointer;">Save</button>
+                <button type="button" onclick="closeModal()" style="flex:1; padding:10px; background:#34495e; color:#fff; border:none; border-radius:6px; cursor:pointer;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Direct Embedded JavaScript Logic -->
+    <script>
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            const status = document.getElementById('themeStatus');
+            if (document.body.classList.contains('light-mode')) {
+                status.innerText = "Light Mode";
+                status.style.color = "#0284c7";
+            } else {
+                status.innerText = "Dark Mode";
+                status.style.color = "#00d2ff";
+            }
+        }
+
+        function openModal() {
+            document.getElementById('pwdModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('pwdModal').style.display = 'none';
+        }
+
+        function savePassword() {
+            const pwd = document.getElementById('newPwd').value;
+            if (pwd) {
+                alert('Password updated successfully!');
+                closeModal();
+            } else {
+                alert('Please enter a password first!');
+            }
+        }
+
+        function resetCache() {
+            localStorage.clear();
+            alert('Local cache and session storage cleared!');
+            location.reload();
+        }
+    </script>
+
+</body>
+
+</html>

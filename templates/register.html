@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - PricingAI</title>
+
+    <!-- Dashboard CSS Link -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0f172a;
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .register-wrapper {
+            width: 100%;
+            max-width: 900px;
+            margin: 20px;
+            background: #162436;
+            border-radius: 16px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            overflow: hidden;
+        }
+
+        /* Left Branding Panel */
+        .brand-panel {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+        }
+
+        .brand-logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00ff88;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature-list {
+            margin: 30px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #cbd5e1;
+            font-size: 14px;
+        }
+
+        .feature-item i {
+            color: #00ff88;
+            font-size: 16px;
+            background: rgba(0, 255, 136, 0.1);
+            padding: 8px;
+            border-radius: 50%;
+        }
+
+        /* Right Form Panel */
+        .form-panel {
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .form-header h2 {
+            margin: 0 0 6px 0;
+            color: #fff;
+            font-size: 24px;
+        }
+
+        .form-header p {
+            margin: 0 0 25px 0;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .input-group {
+            margin-bottom: 18px;
+            position: relative;
+        }
+
+        .input-group label {
+            display: block;
+            color: #cbd5e1;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px 15px 12px 40px;
+            background: #23354d;
+            border: 1px solid #34495e;
+            border-radius: 8px;
+            color: #fff;
+            outline: none;
+            box-sizing: border-box;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .input-field:focus {
+            border-color: #00ff88;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.25);
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 14px;
+            top: 36px;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            background: #00ff88;
+            color: #000;
+            font-weight: bold;
+            font-size: 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover {
+            background: #00e676;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+        }
+
+        .back-home {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #64748b;
+            text-decoration: none;
+            font-size: 13px;
+            margin-bottom: 20px;
+            transition: 0.3s;
+        }
+
+        .back-home:hover {
+            color: #00ff88;
+        }
+
+        @media (max-width: 768px) {
+            .register-wrapper {
+                grid-template-columns: 1fr;
+            }
+            .brand-panel {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="register-wrapper">
+
+        <!-- Left Column: Branding Showcase -->
+        <div class="brand-panel">
+            <div>
+                <a href="/" class="brand-logo">
+                    🤖 PricingAI
+                </a>
+                <p style="color: #64748b; font-size: 13px; margin-top: 8px;">Create an account to start simulating</p>
+            </div>
+
+            <div class="feature-list">
+                <div class="feature-item">
+                    <i class="fas fa-user-check"></i>
+                    <span>Free Access to AI Pricing Tools</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-database"></i>
+                    <span>Personal History & Saved Predictions</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-file-pdf"></i>
+                    <span>Instant PDF Executive Report Generation</span>
+                </div>
+            </div>
+
+            <div style="color: #64748b; font-size: 12px;">
+                © 2026 PricingAI System
+            </div>
+        </div>
+
+        <!-- Right Column: Register Form -->
+        <div class="form-panel">
+
+            <a href="/" class="back-home">
+                <i class="fas fa-arrow-left"></i> Back to Home
+            </a>
+
+            <div class="form-header">
+                <h2>Create Account ⚡</h2>
+                <p>Join PricingAI platform today</p>
+            </div>
+
+            <form action="/register" method="POST">
+
+                <div class="input-group">
+                    <label>Full Name</label>
+                    <i class="fas fa-user input-icon"></i>
+                    <input type="text" name="name" class="input-field" placeholder="Enter your full name" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Email Address</label>
+                    <i class="fas fa-envelope input-icon"></i>
+                    <input type="email" name="email" class="input-field" placeholder="name@example.com" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Password</label>
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" name="password" class="input-field" placeholder="Create a strong password" required>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    ⚡ Register Account
+                </button>
+
+            </form>
+
+            <div style="text-align: center; margin-top: 25px; font-size: 13px; color: #94a3b8;">
+                Already have an account? 
+                <a href="/login" style="color: #00d2ff; text-decoration: none; font-weight: bold;">Sign In Here</a>
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

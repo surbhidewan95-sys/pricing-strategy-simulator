@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Pricing Simulator - PricingAI</title>
+
+    <!-- Dashboard CSS & FontAwesome -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        .sim-container {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 25px;
+            align-items: start;
+        }
+
+        .sim-card {
+            background: #162436;
+            padding: 28px;
+            border-radius: 16px;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transition: all 0.35s ease-in-out;
+        }
+
+        .sim-card:hover {
+            border-color: #00d2ff;
+            box-shadow: 0 0 25px rgba(0, 210, 255, 0.2);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #cbd5e1;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 14px;
+            top: 14px;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 14px 12px 40px;
+            background: #23354d;
+            border: 1px solid #34495e;
+            border-radius: 8px;
+            color: #fff;
+            outline: none;
+            box-sizing: border-box;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            border-color: #00d2ff;
+            box-shadow: 0 0 12px rgba(0, 210, 255, 0.3);
+        }
+
+        /* Range Slider Styling */
+        .range-slider {
+            width: 100%;
+            accent-color: #00d2ff;
+            margin-top: 8px;
+            cursor: pointer;
+        }
+
+        .btn-predict {
+            width: 100%;
+            padding: 14px;
+            background: #00d2ff;
+            color: #000;
+            font-weight: bold;
+            font-size: 15px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 0 18px rgba(0, 210, 255, 0.35);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .btn-predict:hover {
+            background: #38bdf8;
+            box-shadow: 0 0 25px rgba(0, 210, 255, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .info-card {
+            background: #162436;
+            padding: 24px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 20px;
+            transition: 0.3s;
+        }
+
+        .info-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.2);
+        }
+
+        .badge-pill {
+            background: rgba(0, 210, 255, 0.1);
+            color: #00d2ff;
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .badge-pill:hover {
+            background: #00d2ff;
+            color: #000;
+            box-shadow: 0 0 10px rgba(0, 210, 255, 0.4);
+        }
+
+        @media (max-width: 900px) {
+            .sim-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Unified Sidebar Navigation -->
+    <div class="sidebar">
+        <h2>PricingAI</h2>
+        <a href="/">🏠 Home</a>
+        <a href="/dashboard">📊 Dashboard</a>
+        <a href="/simulator">🤖 Simulator</a>
+        <a href="/history">📜 History</a>
+        <a href="/analytics">📊 Analytics</a>
+        <a href="/profile">👤 Profile</a>
+        <a href="/settings">⚙️ Settings</a>
+        <a href="/contact">📞 Contact</a>
+        <hr style="border: 0.5px solid #23354d; margin: 15px 0;">
+        <a href="/login" style="color: #00d2ff;">🔑 Login</a>
+        <a href="/register" style="color: #00ff88;">⚡ Register</a>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+
+        <!-- Header Title Section -->
+        <div style="margin-bottom: 25px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 15px;">
+            <div>
+                <h1 style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                    🤖 AI Pricing Simulator
+                </h1>
+                <p style="color: #aaa; margin: 0; font-size: 15px;">
+                    Enter product details and get instant AI-powered pricing & profit predictions.
+                </p>
+            </div>
+
+            <!-- Auto-Fill Sample Data & Reset Buttons -->
+            <div style="display: flex; gap: 10px;">
+                <button type="button" onclick="loadSampleData()" style="padding: 8px 15px; background: rgba(0,255,136,0.15); color: #00ff88; border: 1px solid rgba(0,255,136,0.3); border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: 0.3s;">
+                    <i class="fas fa-bolt"></i> Load Demo Values
+                </button>
+                <button type="button" onclick="resetFormFields()" style="padding: 8px 15px; background: #23354d; color: #aaa; border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; font-weight: 500; font-size: 13px; cursor: pointer;">
+                    <i class="fas fa-undo"></i> Reset
+                </button>
+            </div>
+        </div>
+
+        <div class="sim-container">
+
+            <!-- Left Form Card -->
+            <div class="sim-card">
+                <form action="/predict" method="POST" id="simulatorForm">
+
+                    <!-- Product Cost -->
+                    <div class="input-group">
+                        <label>
+                            <span>Product Cost (₹)</span>
+                            <span id="costValDisplay" style="color: #00d2ff; font-weight: bold;">₹250</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-coins"></i>
+                            <input type="number" id="cost" name="cost" class="form-input" value="250" step="any" required oninput="syncRange('cost', 'costSlider', 'costValDisplay', '₹')">
+                        </div>
+                        <input type="range" id="costSlider" class="range-slider" min="10" max="5000" value="250" oninput="syncInput('cost', 'costSlider', 'costValDisplay', '₹')">
+                    </div>
+
+                    <!-- Selling Price -->
+                    <div class="input-group">
+                        <label>
+                            <span>Selling Price (₹)</span>
+                            <span id="priceValDisplay" style="color: #00ff88; font-weight: bold;">₹450</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-tag"></i>
+                            <input type="number" id="price" name="price" class="form-input" value="450" step="any" required oninput="syncRange('price', 'priceSlider', 'priceValDisplay', '₹')">
+                        </div>
+                        <input type="range" id="priceSlider" class="range-slider" min="10" max="10000" value="450" oninput="syncInput('price', 'priceSlider', 'priceValDisplay', '₹')">
+                    </div>
+
+                    <!-- Competitor Price -->
+                    <div class="input-group">
+                        <label>
+                            <span>Competitor Price (₹)</span>
+                            <span id="compValDisplay" style="color: #f39c12; font-weight: bold;">₹420</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-store"></i>
+                            <input type="number" id="competitor" name="competitor" class="form-input" value="420" step="any" required oninput="syncRange('competitor', 'compSlider', 'compValDisplay', '₹')">
+                        </div>
+                        <input type="range" id="compSlider" class="range-slider" min="10" max="10000" value="420" oninput="syncInput('competitor', 'compSlider', 'compValDisplay', '₹')">
+                    </div>
+
+                    <!-- Expected Demand -->
+                    <div class="input-group">
+                        <label>
+                            <span>Expected Demand (Units)</span>
+                            <span id="demandValDisplay" style="color: #9b59b6; font-weight: bold;">150 Units</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-boxes"></i>
+                            <input type="number" id="demand" name="demand" class="form-input" value="150" required oninput="syncRange('demand', 'demandSlider', 'demandValDisplay', '', ' Units')">
+                        </div>
+                        <input type="range" id="demandSlider" class="range-slider" min="1" max="2000" value="150" oninput="syncInput('demand', 'demandSlider', 'demandValDisplay', '', ' Units')">
+                    </div>
+
+                    <!-- Predict Submit Button -->
+                    <button type="submit" class="btn-predict">
+                        <i class="fas fa-bolt"></i> Predict Profit & Generate Report
+                    </button>
+
+                </form>
+            </div>
+
+            <!-- Right Info & Insights Side Panels -->
+            <div>
+
+                <!-- How Simulator Works Card -->
+                <div class="info-card" style="border-left: 4px solid #00d2ff;">
+                    <h3 style="margin-top: 0; color: #00d2ff; font-size: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-lightbulb"></i> How Simulator Works
+                    </h3>
+                    <ul style="color: #cbd5e1; font-size: 13px; padding-left: 18px; margin: 0; line-height: 1.7;">
+                        <li><strong>Cost vs Price:</strong> Evaluates net profit margins using regression models.</li>
+                        <li><strong>Competitor Benchmark:</strong> Analyzes demand elasticity against current market rates.</li>
+                        <li><strong>Profit Forecast:</strong> Calculates total projected revenue and optimal strategy.</li>
+                    </ul>
+                </div>
+
+                <!-- Pricing Insights Badge Card -->
+                <div class="info-card" style="border-left: 4px solid #00ff88;">
+                    <h3 style="margin-top: 0; color: #00ff88; font-size: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-bullseye"></i> AI Optimization Metrics
+                    </h3>
+                    <p style="color: #aaa; font-size: 13px; margin-bottom: 15px;">
+                        Key parameters continuously evaluated by the ML model:
+                    </p>
+
+                    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                        <span class="badge-pill" onclick="alert('Competitive Index compares your price against average market benchmarks.')">
+                            <i class="fas fa-balance-scale"></i> Competitive Index
+                        </span>
+                        <span class="badge-pill" onclick="alert('Demand Elasticity measures sales volume sensitivity to price changes.')">
+                            <i class="fas fa-chart-line"></i> Demand Elasticity
+                        </span>
+                        <span class="badge-pill" onclick="alert('Margin Safety ensures your selling price maintains positive gross profit.')">
+                            <i class="fas fa-shield-alt"></i> Margin Safety
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Direct Quick Action Banner -->
+                <div class="info-card" style="background: rgba(0, 210, 255, 0.05); border: 1px solid rgba(0, 210, 255, 0.2);">
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <div>
+                            <strong style="color: #00d2ff; display: block; font-size: 14px;">Want to see previous runs?</strong>
+                            <span style="color: #aaa; font-size: 12px;">View all stored SQLite logs anytime.</span>
+                        </div>
+                        <a href="/history" style="padding: 8px 14px; background: #00d2ff; color: #000; font-weight: bold; font-size: 12px; border-radius: 6px; text-decoration: none;">History →</a>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Sync Sliders & Auto-Fill Script -->
+    <script>
+        function syncRange(inputId, sliderId, displayId, prefix = '', suffix = '') {
+            const inputVal = document.getElementById(inputId).value;
+            document.getElementById(sliderId).value = inputVal;
+            document.getElementById(displayId).innerText = prefix + inputVal + suffix;
+        }
+
+        function syncInput(inputId, sliderId, displayId, prefix = '', suffix = '') {
+            const sliderVal = document.getElementById(sliderId).value;
+            document.getElementById(inputId).value = sliderVal;
+            document.getElementById(displayId).innerText = prefix + sliderVal + suffix;
+        }
+
+        function loadSampleData() {
+            document.getElementById('cost').value = 500;
+            document.getElementById('price').value = 850;
+            document.getElementById('competitor').value = 800;
+            document.getElementById('demand').value = 300;
+
+            syncRange('cost', 'costSlider', 'costValDisplay', '₹');
+            syncRange('price', 'priceSlider', 'priceValDisplay', '₹');
+            syncRange('competitor', 'compSlider', 'compValDisplay', '₹');
+            syncRange('demand', 'demandSlider', 'demandValDisplay', '', ' Units');
+        }
+
+        function resetFormFields() {
+            document.getElementById('cost').value = 250;
+            document.getElementById('price').value = 450;
+            document.getElementById('competitor').value = 420;
+            document.getElementById('demand').value = 150;
+
+            syncRange('cost', 'costSlider', 'costValDisplay', '₹');
+            syncRange('price', 'priceSlider', 'priceValDisplay', '₹');
+            syncRange('competitor', 'compSlider', 'compValDisplay', '₹');
+            syncRange('demand', 'demandSlider', 'demandValDisplay', '', ' Units');
+        }
+    </script>
+
+</body>
+
+</html>

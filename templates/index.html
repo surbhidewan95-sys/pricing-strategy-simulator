@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>PricingAI - Smart Pricing Simulator</title>
+
+    <!-- FontAwesome & Base CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        /* Base & Dark Theme Styling */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0d1527;
+            color: #fff;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Ambient Glowing Backgrounds */
+        .ambient-glow-1 {
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(0, 210, 255, 0.18) 0%, rgba(13, 21, 39, 0) 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Glassmorphic Navbar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 45px;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            color: #00d2ff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-shadow: 0 0 12px rgba(0, 210, 255, 0.4);
+            text-decoration: none;
+        }
+
+        .navbar ul {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar ul li a {
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .navbar ul li a:hover {
+            color: #00d2ff;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 70px 20px 50px 20px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-content h1 {
+            font-size: 52px;
+            font-weight: 800;
+            margin-bottom: 18px;
+            background: linear-gradient(135deg, #ffffff 30%, #00d2ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .hero-content p {
+            color: #94a3b8;
+            font-size: 18px;
+            max-width: 620px;
+            margin: 0 auto 35px auto;
+            line-height: 1.6;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .primary-btn {
+            padding: 14px 28px;
+            background: #00d2ff;
+            color: #0d1527;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 15px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.4);
+            transition: all 0.3s ease-in-out;
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 28px rgba(0, 210, 255, 0.65);
+        }
+
+        .secondary-btn {
+            padding: 14px 28px;
+            background: #1e293b;
+            color: #f8fafc;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .secondary-btn:hover {
+            background: #334155;
+            transform: translateY(-3px);
+            border-color: #00d2ff;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 50px 20px;
+            max-width: 1100px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .features h2 {
+            text-align: center;
+            font-size: 32px;
+            color: #fff;
+            margin-bottom: 35px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 22px;
+        }
+
+        .feature-card {
+            background: #162436;
+            padding: 30px 25px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transition: all 0.35s ease-in-out;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: #00d2ff;
+            box-shadow: 0 0 25px rgba(0, 210, 255, 0.35), inset 0 0 10px rgba(0, 210, 255, 0.08);
+        }
+
+        .feature-card i {
+            font-size: 32px;
+            color: #00d2ff;
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+
+        .feature-card h3 {
+            margin: 0 0 10px 0;
+            color: #f8fafc;
+            font-size: 19px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .feature-card h3::after {
+            content: '➔';
+            font-size: 14px;
+            color: #00d2ff;
+            opacity: 0.6;
+            transition: 0.3s;
+        }
+
+        .feature-card:hover h3::after {
+            opacity: 1;
+            transform: translateX(4px);
+        }
+
+        .feature-card p {
+            color: #94a3b8;
+            font-size: 14px;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        /* Stats Section */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-box {
+            background: #162436;
+            padding: 24px;
+            border-radius: 14px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-top: 3px solid #00ff88;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .stat-box:hover {
+            transform: translateY(-4px);
+            border-color: #00ff88;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+        }
+
+        .stat-box h2 {
+            margin: 0 0 6px 0;
+            color: #00ff88;
+            font-size: 32px;
+            font-weight: 800;
+        }
+
+        .stat-box p {
+            margin: 0;
+            color: #94a3b8;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* About Section */
+        .about {
+            max-width: 800px;
+            margin: 60px auto 40px auto;
+            text-align: center;
+            padding: 30px;
+            background: #162436;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            position: relative;
+            z-index: 1;
+        }
+
+        .about h2 {
+            color: #fff;
+            margin-top: 0;
+            margin-bottom: 12px;
+            font-size: 24px;
+        }
+
+        .about p {
+            color: #94a3b8;
+            line-height: 1.6;
+            margin: 0;
+            font-size: 15px;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 22px;
+            background: #0b1120;
+            color: #64748b;
+            font-size: 13px;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Redesigned Premium Glassmorphic Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(11, 17, 32, 0.85);
+            backdrop-filter: blur(10px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-box {
+            background: #162436;
+            padding: 32px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 480px;
+            color: #fff;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 210, 255, 0.2);
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+
+        @keyframes modalPop {
+            from { opacity: 0; transform: scale(0.85) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .modal-icon-header {
+            width: 60px;
+            height: 60px;
+            background: rgba(0, 210, 255, 0.1);
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            color: #00d2ff;
+            margin-bottom: 20px;
+        }
+
+        .modal-close-x {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: none;
+            color: #aaa;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+
+        .modal-close-x:hover {
+            background: rgba(255, 77, 77, 0.2);
+            color: #ff4d4d;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="ambient-glow-1"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="/" class="logo">
+            🤖 PricingAI
+        </a>
+
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/dashboard">Dashboard</a></li>
+            <li><a href="/simulator">Simulator</a></li>
+            <li><a href="/csv-qa">CSV Assistant</a></li>
+            <li><a href="/analytics">Analytics</a></li>
+            <li><a href="/profile">Profile</a></li>
+            <li><a href="/settings">Settings</a></li>
+            <li><a href="/contact">Contact</a></li>
+            {% if session.get('user_id') %}
+                <li><a href="/logout">Logout</a></li>
+            {% else %}
+                <li><a href="/login">Login</a></li>
+                <li><a href="/register">Register</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>AI Pricing Strategy Simulator</h1>
+            <p>Predict profit, analyze market trends, optimize product pricing, and query CSV datasets with AI.</p>
+
+            <div class="hero-buttons">
+                <a href="/simulator">
+                    <button class="primary-btn">🚀 Launch Simulator</button>
+                </a>
+                <a href="/dashboard">
+                    <button class="secondary-btn">📊 Open Dashboard</button>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <h2>✨ Features</h2>
+        <div class="feature-grid">
+
+            <div class="feature-card" onclick="openFeatureModal('ai')">
+                <i class="fas fa-brain"></i>
+                <h3>AI Prediction</h3>
+                <p>Predict revenue and profit using Machine Learning algorithms based on demand elasticity.</p>
+            </div>
+
+            <div class="feature-card" onclick="openFeatureModal('csv')">
+                <i class="fas fa-file-csv"></i>
+                <h3>CSV AI Assistant</h3>
+                <p>Upload any CSV dataset to ask questions and perform automated data analytics.</p>
+            </div>
+
+            <div class="feature-card" onclick="openFeatureModal('analytics')">
+                <i class="fas fa-chart-line"></i>
+                <h3>Analytics</h3>
+                <p>Visualize your sales performance and financial trends using real-time dynamic charts.</p>
+            </div>
+
+            <div class="feature-card" onclick="openFeatureModal('revenue')">
+                <i class="fas fa-coins"></i>
+                <h3>Revenue Tracking</h3>
+                <p>Monitor business growth, profit margins, and benchmark against market competitors.</p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Statistics Section -->
+    <section class="stats">
+        <div class="stat-box">
+            <h2>500+</h2>
+            <p>Predictions Logged</p>
+        </div>
+        <div class="stat-box">
+            <h2>150+</h2>
+            <p>Active Users</p>
+        </div>
+        <div class="stat-box">
+            <h2>95%</h2>
+            <p>Accuracy</p>
+        </div>
+        <div class="stat-box">
+            <h2>24/7</h2>
+            <p>Support</p>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about">
+        <h2>📌 About PricingAI</h2>
+        <p>PricingAI is an AI-powered pricing optimization platform built using Flask, Machine Learning, SQLite, Pandas and modern web technologies.</p>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2026 PricingAI Platform | Developed by PricingAI Team</p>
+    </footer>
+
+    <!-- Interactive Feature Modal Overlay -->
+    <div id="featureModal" class="modal-overlay">
+        <div class="modal-box">
+            <button class="modal-close-x" onclick="closeFeatureModal()">✕</button>
+
+            <div class="modal-icon-header" id="modalIcon">
+                <i class="fas fa-brain"></i>
+            </div>
+
+            <h3 id="modalTitle" style="margin: 0 0 10px 0; color: #fff; font-size: 22px; font-weight: 700;">
+                Feature Details
+            </h3>
+
+            <p id="modalDesc" style="color: #94a3b8; font-size: 14px; line-height: 1.6; margin: 0 0 25px 0;">
+                Description details...
+            </p>
+
+            <div style="display: flex; gap: 12px;">
+                <a id="modalActionBtn" href="#" style="flex: 1; text-align: center; padding: 12px; background: #00d2ff; color: #0d1527; font-weight: 700; border-radius: 10px; text-decoration: none; box-shadow: 0 0 15px rgba(0, 210, 255, 0.4); transition: 0.3s;">
+                    Open Tool
+                </a>
+                <button type="button" onclick="closeFeatureModal()" style="padding: 12px 20px; background: #23354d; color: #cbd5e1; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; cursor: pointer; font-weight: 500;">
+                    Dismiss
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Script -->
+    <script>
+        const featureDetails = {
+            ai: {
+                icon: "fas fa-brain",
+                title: "AI Prediction Engine",
+                desc: "Our Machine Learning regression model evaluates product cost, target selling price, competitor prices, and expected demand elasticity to accurately compute expected profit margins.",
+                btnText: "🚀 Open Simulator",
+                link: "/simulator"
+            },
+            csv: {
+                icon: "fas fa-file-csv",
+                title: "CSV AI Data Assistant",
+                desc: "Upload CSV dataset files to run natural language queries, fetch statistical summaries, mean/max values, and record previews dynamically.",
+                btnText: "📁 Open CSV Assistant",
+                link: "/csv-qa"
+            },
+            analytics: {
+                icon: "fas fa-chart-line",
+                title: "Interactive Data Analytics",
+                desc: "Deep visual metrics featuring Chart.js line and bar graphs. Track monthly revenue growth, strategy distributions, and model performance metrics in real time.",
+                btnText: "📊 View Analytics",
+                link: "/analytics"
+            },
+            revenue: {
+                icon: "fas fa-coins",
+                title: "Revenue & Profit Tracking",
+                desc: "Keep complete financial records stored securely in the SQLite database. Download custom PDF summary reports for executive decision-making.",
+                btnText: "📈 Open Dashboard",
+                link: "/dashboard"
+            }
+        };
+
+        function openFeatureModal(type) {
+            const data = featureDetails[type];
+            if (data) {
+                document.getElementById('modalIcon').innerHTML = `<i class="${data.icon}"></i>`;
+                document.getElementById('modalTitle').innerText = data.title;
+                document.getElementById('modalDesc').innerText = data.desc;
+                const actionBtn = document.getElementById('modalActionBtn');
+                actionBtn.innerText = data.btnText;
+                actionBtn.href = data.link;
+                document.getElementById('featureModal').style.display = 'flex';
+            }
+        }
+
+        function closeFeatureModal() {
+            document.getElementById('featureModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('featureModal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+
+</body>
+
+</html>

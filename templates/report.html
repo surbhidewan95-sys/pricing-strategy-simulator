@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Executive Prediction Report - PricingAI</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        .report-paper {
+            background: #162436;
+            border-radius: 16px;
+            padding: 35px 40px;
+            border: 1px solid rgba(0, 210, 255, 0.25);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            font-size: 14px;
+        }
+
+        .report-table th {
+            background: #1e2d42;
+            color: #00d2ff;
+            text-align: left;
+            padding: 12px 16px;
+            font-weight: 600;
+        }
+
+        .report-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: #cbd5e1;
+        }
+
+        .metric-highlight {
+            background: rgba(0, 210, 255, 0.08);
+            border: 1px solid rgba(0, 210, 255, 0.2);
+            padding: 18px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        @media print {
+            .sidebar, .no-print { display: none !important; }
+            .main-content { margin: 0 !important; padding: 0 !important; }
+            .report-paper { border: none !important; box-shadow: none !important; color: #000 !important; background: #fff !important; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar no-print">
+        <h2>PricingAI</h2>
+        <a href="/">🏠 Home</a>
+        <a href="/dashboard">📊 Dashboard</a>
+        <a href="/simulator">🤖 Simulator</a>
+        <a href="/history">📜 History</a>
+        <a href="/analytics">📊 Analytics</a>
+        <a href="/profile">👤 Profile</a>
+        <a href="/settings">⚙️ Settings</a>
+        <a href="/contact">📞 Contact</a>
+    </div>
+
+    <div class="main-content">
+
+        <!-- Top Action Bar -->
+        <div class="no-print" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+            <a href="javascript:history.back()" style="color: #00d2ff; text-decoration: none; font-weight: 600; font-size: 14px;">
+                ← Back to Result
+            </a>
+            <div style="display: flex; gap: 10px;">
+                <button onclick="window.print()" style="padding: 10px 18px; background: #23354d; color: #fff; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; font-weight: 600; cursor: pointer;">
+                    <i class="fas fa-print"></i> Print Report
+                </button>
+                <a href="/download-pdf?revenue={{ fmt_revenue }}&profit={{ fmt_profit }}&strategy={{ strategy }}" style="padding: 10px 18px; background: #00d2ff; color: #000; border-radius: 8px; font-weight: 700; text-decoration: none; box-shadow: 0 0 15px rgba(0,210,255,0.4);">
+                    <i class="fas fa-download"></i> Download Official PDF
+                </a>
+            </div>
+        </div>
+
+        <!-- Full Page Report Container -->
+        <div class="report-paper">
+
+            <div class="report-header">
+                <div>
+                    <h2 style="margin: 0; color: #00d2ff; font-size: 24px; font-weight: 700;">🤖 PricingAI Executive Summary</h2>
+                    <p style="margin: 5px 0 0 0; color: #aaa; font-size: 13px;">Official Machine Learning Pricing Model Analysis Report</p>
+                </div>
+                <div style="text-align: right;">
+                    <span style="background: rgba(0, 255, 136, 0.15); color: #00ff88; border: 1px solid rgba(0, 255, 136, 0.3); padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;">
+                        VERIFIED AI OUTPUT
+                    </span>
+                </div>
+            </div>
+
+            <!-- Top Summary Cards -->
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px;">
+                <div class="metric-highlight">
+                    <span style="color: #aaa; font-size: 12px; display: block;">Total Projected Revenue</span>
+                    <strong style="color: #00d2ff; font-size: 22px;">₹{{ fmt_revenue }}</strong>
+                </div>
+                <div class="metric-highlight" style="border-color: rgba(0, 255, 136, 0.3); background: rgba(0, 255, 136, 0.08);">
+                    <span style="color: #aaa; font-size: 12px; display: block;">Net Predicted Profit</span>
+                    <strong style="color: #00ff88; font-size: 22px;">₹{{ fmt_profit }}</strong>
+                </div>
+                <div class="metric-highlight" style="border-color: rgba(155, 89, 182, 0.3); background: rgba(155, 89, 182, 0.08);">
+                    <span style="color: #aaa; font-size: 12px; display: block;">Recommended Strategy</span>
+                    <strong style="color: #9b59b6; font-size: 20px;">{{ strategy }}</strong>
+                </div>
+            </div>
+
+            <!-- Detailed Analysis Table -->
+            <h3 style="color: #fff; font-size: 16px; margin-bottom: 10px;">📊 Simulation Financial Parameters</h3>
+            <table class="report-table">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Entered Value</th>
+                        <th>Impact Category</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Unit Production Cost</td>
+                        <td><strong>₹{{ fmt_cost }}</strong></td>
+                        <td>Baseline Overhead</td>
+                    </tr>
+                    <tr>
+                        <td>Target Selling Price</td>
+                        <td><strong>₹{{ fmt_price }}</strong></td>
+                        <td>Revenue Generation Unit</td>
+                    </tr>
+                    <tr>
+                        <td>Market Competitor Benchmark</td>
+                        <td><strong>₹{{ fmt_competitor }}</strong></td>
+                        <td>Elasticity Metric</td>
+                    </tr>
+                    <tr>
+                        <td>Expected Sales Volume</td>
+                        <td><strong>{{ demand }} Units</strong></td>
+                        <td>Market Scale Index</td>
+                    </tr>
+                    <tr>
+                        <td>Total Calculated Revenue</td>
+                        <td><strong style="color: #00d2ff;">₹{{ fmt_revenue }}</strong></td>
+                        <td>Gross Revenue Top-Line</td>
+                    </tr>
+                    <tr>
+                        <td>Final Projected Net Profit</td>
+                        <td><strong style="color: #00ff88;">₹{{ fmt_profit }}</strong></td>
+                        <td>Net Bottom-Line Margin</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Executive Remarks -->
+            <div style="background: #1e2d42; padding: 20px; border-radius: 12px; border-left: 4px solid #00d2ff; margin-top: 25px;">
+                <h4 style="margin: 0 0 8px 0; color: #00d2ff; font-size: 15px;">💡 Strategic Recommendations</h4>
+                <p style="margin: 0; color: #cbd5e1; font-size: 13px; line-height: 1.6;">
+                    Based on market elasticity benchmarks, the selling price of <strong>₹{{ fmt_price }}</strong> provides an optimal balance between unit profitability and sales volume adoption. The forecast indicates high financial stability under current parameters.
+                </p>
+            </div>
+
+            <div style="margin-top: 35px; text-align: center; color: #64748b; font-size: 12px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px;">
+                Generated by PricingAI Platform Engine | Auto-Synchronized Database Records
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

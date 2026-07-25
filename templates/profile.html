@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile - PricingAI</title>
+
+    <!-- Dashboard CSS Link -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+
+    <style>
+        .profile-card {
+            background: #162436;
+            border-radius: 14px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            overflow: hidden;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .profile-card:hover {
+            border-color: #00d2ff;
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.25);
+        }
+
+        .cover-banner {
+            height: 90px;
+            background: linear-gradient(135deg, #00d2ff 0%, #00ff88 100%);
+            opacity: 0.85;
+        }
+
+        .avatar-container {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #162436;
+            border: 4px solid #162436;
+            margin: -40px auto 10px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 38px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px 15px;
+            background: #23354d;
+            border: 1px solid #34495e;
+            border-radius: 8px;
+            color: #fff;
+            outline: none;
+            box-sizing: border-box;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .input-field:focus {
+            border-color: #00d2ff;
+            box-shadow: 0 0 10px rgba(0, 210, 255, 0.3);
+        }
+
+        .badge-tag {
+            background: #23354d;
+            color: #00d2ff;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            border: 1px solid rgba(0, 210, 255, 0.3);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Unified Sidebar Navigation -->
+    <div class="sidebar">
+        <h2>PricingAI</h2>
+        <a href="/">🏠 Home</a>
+        <a href="/dashboard">📊 Dashboard</a>
+        <a href="/simulator">🤖 Simulator</a>
+        <a href="/history">📜 History</a>
+        <a href="/analytics">📊 Analytics</a>
+        <a href="/settings">⚙️ Settings</a>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+
+        <!-- Header Section -->
+        <div style="margin-bottom: 25px;">
+            <h1 style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                👤 User Account & Profile Settings
+            </h1>
+            <p style="color: #aaa; margin: 0; font-size: 15px;">
+                Personal identity parameters, authorization badges, and system usage overview.
+            </p>
+        </div>
+
+        <!-- Top Grid Section (Avatar + Form) -->
+        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 25px; margin-bottom: 25px; align-items: start;">
+
+            <!-- Left Box: Modern Header Banner Card -->
+            <div class="profile-card">
+                <div class="cover-banner"></div>
+                <div class="avatar-container">
+                    👨‍💻
+                </div>
+
+                <div style="padding: 0 20px 20px 20px; text-align: center;">
+                    <h2 id="displayTitle" style="margin: 0 0 4px 0; color: #fff; font-size: 22px;">
+                        Admin User
+                    </h2>
+                    <p id="displayRole" style="color: #00d2ff; margin: 0 0 15px 0; font-size: 14px; font-weight: 500;">
+                        Computer Science Student
+                    </p>
+
+                    <!-- System Badges -->
+                    <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px;">
+                        <span class="badge-tag" style="color: #00ff88; border-color: rgba(0,255,136,0.3);">⚡ Admin Access</span>
+                        <span class="badge-tag">🤖 ML Verified</span>
+                    </div>
+
+                    <!-- Metrics Grid -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: #23354d; padding: 12px; border-radius: 10px;">
+                        <div>
+                            <span style="display: block; color: #aaa; font-size: 11px;">Total Simulations</span>
+                            <strong style="color: #00ff88; font-size: 18px;">52</strong>
+                        </div>
+                        <div>
+                            <span style="display: block; color: #aaa; font-size: 11px;">Account Status</span>
+                            <strong style="color: #00d2ff; font-size: 14px;">Active</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Box: Interactive Form -->
+            <div class="profile-card" style="padding: 25px; border-top: 3px solid #00d2ff;">
+                <h3 style="margin-top: 0; color: #00d2ff; font-size: 18px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+                    ✏️ Update Profile Details
+                </h3>
+
+                <form id="profileForm" onsubmit="saveProfileDetails(event)" style="display: flex; flex-direction: column; gap: 16px;">
+
+                    <div>
+                        <label style="display: block; color: #ccc; margin-bottom: 6px; font-size: 13px; font-weight: 500;">Full Name</label>
+                        <input type="text" id="nameInput" class="input-field" value="Admin User" placeholder="Enter full name" required>
+                    </div>
+
+                    <div>
+                        <label style="display: block; color: #ccc; margin-bottom: 6px; font-size: 13px; font-weight: 500;">Email Address</label>
+                        <input type="email" id="emailInput" class="input-field" value="admin@pricingai.com" placeholder="Enter email" required>
+                    </div>
+
+                    <div>
+                        <label style="display: block; color: #ccc; margin-bottom: 6px; font-size: 13px; font-weight: 500;">Designation / Role</label>
+                        <input type="text" id="roleInput" class="input-field" value="Computer Science Student" placeholder="Enter role" required>
+                    </div>
+
+                    <div style="display: flex; gap: 12px; margin-top: 8px;">
+                        <button type="submit" style="flex: 1; padding: 12px; background: #00d2ff; color: #000; font-weight: bold; font-size: 14px; border: none; border-radius: 8px; cursor: pointer; transition: 0.3s; box-shadow: 0 0 12px rgba(0, 210, 255, 0.3);">
+                            💾 Save Changes
+                        </button>
+
+                        <a href="/dashboard" style="padding: 12px 22px; background: #23354d; color: #fff; text-decoration: none; border-radius: 8px; font-weight: 500; font-size: 14px; text-align: center;">
+                            📊 Dashboard
+                        </a>
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+
+        <!-- Bottom Section: Recent Profile Activity (Khali space fill karne ke liye) -->
+        <div class="profile-card" style="padding: 25px; border-top: 3px solid #00ff88;">
+            <h3 style="margin-top: 0; color: #00ff88; font-size: 17px; margin-bottom: 15px;">
+                📜 Account Activity & Security Logs
+            </h3>
+
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; background: #23354d; padding: 12px 18px; border-radius: 8px; font-size: 13px;">
+                    <div style="display: flex; align-items: center; gap: 10px; color: #fff;">
+                        <span>🤖</span>
+                        <span>Executed AI Prediction Simulation (High Profit Strategy)</span>
+                    </div>
+                    <span style="color: #aaa; font-size: 12px;">Just Now</span>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; background: #23354d; padding: 12px 18px; border-radius: 8px; font-size: 13px;">
+                    <div style="display: flex; align-items: center; gap: 10px; color: #fff;">
+                        <span>🔑</span>
+                        <span>Logged in successfully via Admin Authentication</span>
+                    </div>
+                    <span style="color: #aaa; font-size: 12px;">Today, 10:30 AM</span>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; background: #23354d; padding: 12px 18px; border-radius: 8px; font-size: 13px;">
+                    <div style="display: flex; align-items: center; gap: 10px; color: #fff;">
+                        <span>📄</span>
+                        <span>Generated PDF Summary Report</span>
+                    </div>
+                    <span style="color: #aaa; font-size: 12px;">Yesterday</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Live Customization Script -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const savedName = localStorage.getItem("profileName");
+            const savedEmail = localStorage.getItem("profileEmail");
+            const savedRole = localStorage.getItem("profileRole");
+
+            if (savedName) {
+                document.getElementById("displayTitle").innerText = savedName;
+                document.getElementById("nameInput").value = savedName;
+            }
+            if (savedEmail) {
+                document.getElementById("emailInput").value = savedEmail;
+            }
+            if (savedRole) {
+                document.getElementById("displayRole").innerText = savedRole;
+                document.getElementById("roleInput").value = savedRole;
+            }
+        });
+
+        function saveProfileDetails(event) {
+            event.preventDefault();
+
+            const newName = document.getElementById("nameInput").value;
+            const newEmail = document.getElementById("emailInput").value;
+            const newRole = document.getElementById("roleInput").value;
+
+            localStorage.setItem("profileName", newName);
+            localStorage.setItem("profileEmail", newEmail);
+            localStorage.setItem("profileRole", newRole);
+
+            document.getElementById("displayTitle").innerText = newName;
+            document.getElementById("displayRole").innerText = newRole;
+
+            alert("Profile details updated successfully!");
+        }
+    </script>
+
+</body>
+
+</html>
